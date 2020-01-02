@@ -32,21 +32,20 @@ var starter = (function () {
      * state.
      */
     function handler() {
-        var result;
         var players_to_act;
         var tmp;
         if (sessionStorage.getItem("event_type") === "Mouse") {
             players_to_act = playerPicker.handleMouse();
             if (players_to_act.length >= 2) {
                 mathutils.shuffle(players_to_act);
-                tmp = JSON.stringify(players_to_act)
+                tmp = JSON.stringify(players_to_act);
                 sessionStorage.setItem("players", tmp);
                 handlePage.clear();
                 sessionStorage.setItem("state", PLACE_STARTING_POS);
                 tmp = JSON.stringify(players_to_act[0]);
                 sessionStorage.setItem("start_player", tmp);
                 players_to_act.reverse();
-                players_to_act.pop(); 
+                players_to_act.pop();
                 tmp = JSON.stringify(players_to_act);
                 sessionStorage.setItem("start_queue", tmp);
                 rondel.init();

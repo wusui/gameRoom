@@ -1,7 +1,8 @@
 /* Copyright (c) 2020 Warren Usui, MIT License */
 /*global canvasObjects, heavenAndAle, universe, gameDialog,
   mathutils, shapeDrawer, handlePage, barrel, constants, GAME_OVER_STATE,
-  BROWN, PURPLE, BLACK, PALE_Y, RNAME, RCOLOR, NUM_OF_BARRELS */
+  WHITE, BROWN, PURPLE, BLACK, PALE_Y, RNAME, RCOLOR, NUM_OF_BARRELS,
+  PLAYER_GETS_2RES, REGULAR_TURN */
 /*jslint browser:true */
 
 /*****************************************************************************
@@ -49,7 +50,7 @@ var rondel = (function () {
     var thisRoundIndex;
     var xgval;
     var ygval;
-    var found2res;
+    var found2Res;
     var layout = [
         {type: "Start", "first": "", "xtraMny": "", "mvBrew": "", "mvRes": ""},
         {type: "Resource", player: "", content: []},
@@ -338,7 +339,7 @@ var rondel = (function () {
         }
         ctx.fillStyle = lyout[0][sqparm];
         ctx.fillRect(xv, yv, 50, 50);
-        if (ctx.fillStyle == BLACK) {
+        if (ctx.fillStyle === BLACK) {
             return WHITE;
         }
         return BLACK;
@@ -423,7 +424,7 @@ var rondel = (function () {
             irondel.monkpiles.push("II");
             irondel.monkpiles.push("II");
         }
-        irondel.layout[0]["first"] = lplayers[0];
+        irondel.layout[0].first = lplayers[0];
         sessionStorage.setItem("rondel", JSON.stringify(irondel));
     }
 
@@ -470,7 +471,7 @@ var rondel = (function () {
     }
 
     function find2Res(item) {
-        bdata = JSON.parse(sessionStorage.getItem("boards"));
+        var bdata = JSON.parse(sessionStorage.getItem("boards"));
         if (bdata[item].canIncRes) {
             bdata[item].canIncRes = false;
             found2Res = item;
@@ -488,6 +489,7 @@ var rondel = (function () {
         var sess_tmp;
         var sess_inf;
         var fPlayers;
+        var bdata;
         var ssqz = ["first", "mvRes", "mvBrew", "xtraMny"];
         if (sessionStorage.getItem("event_type") === "Mouse") {
             xnum = sessionStorage.getItem("X_value");
@@ -502,11 +504,11 @@ var rondel = (function () {
             digit2 = Math.floor(ynum / 50);
             indx = digit2 * 2 + digit1;
             tempinfo = JSON.parse(sessionStorage.getItem("rondel"));
-            if (tempinfo.layout[0][ssqz[indx]] == "") {
+            if (tempinfo.layout[0][ssqz[indx]] === "") {
                 sess_tmp = sessionStorage.getItem("start_queue");
                 nextQueue = JSON.parse(sess_tmp);
                 new_starter = nextQueue.shift();
-                if (typeof(new_starter) == "undefined") {
+                if (new_starter === "undefined") {
                     return;
                 }
                 sess_tmp =  JSON.stringify(nextQueue);
@@ -514,13 +516,13 @@ var rondel = (function () {
                 tempinfo.layout[0][ssqz[indx]] = new_starter;
                 sessionStorage.setItem("rondel", JSON.stringify(tempinfo));
                 bdata = JSON.parse(sessionStorage.getItem("boards"));
-                if (indx == 3) {
-                    bdata[new_starter]["money"] += 2;
+                if (indx === 3) {
+                    bdata[new_starter].money += 2;
                 }
-                if (indx == 2) {
-                    bdata[new_starter]["brewmaster"] += 1;
+                if (indx === 2) {
+                    bdata[new_starter].brewmaster += 1;
                 }
-                if (indx == 1) {
+                if (indx === 1) {
                     bdata[new_starter].canIncRes = true;
                 }
                 switchTo();
@@ -536,8 +538,6 @@ var rondel = (function () {
                     } else {
                         sessionStorage.setItem("state", REGULAR_TURN);
                     }
-                    
-                    
                 }
             }
         }

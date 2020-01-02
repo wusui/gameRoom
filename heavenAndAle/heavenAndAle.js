@@ -105,7 +105,7 @@ var heavenAndAle = (function () {
             helpText += "<p>C";
         }
         helpText += "lick on the resource that you wish";
-        helpText += " to advance</p>"
+        helpText += " to advance</p>";
         return helpText;
     }
 
@@ -192,6 +192,7 @@ var heavenAndAle = (function () {
         var curp = sessionStorage.getItem("page");
         var p2bon = sessionStorage.getItem("add2rec2");
         var resLoc;
+        var bdata;
         if (yval < 70) {
             return;
         }
@@ -207,8 +208,8 @@ var heavenAndAle = (function () {
         if ((xval - 530) % 100 > 80) {
             return;
         }
-        if (curp == p2bon) {
-            resLoc = Math.round((xval - 530) / 100);
+        if (curp === p2bon) {
+            resLoc = Math.floor((xval - 530) / 100);
             bdata = JSON.parse(sessionStorage.getItem("boards"));
             bdata[curp].resources[RCOLOR[resLoc]] += 2;
             sessionStorage.setItem("boards", JSON.stringify(bdata));

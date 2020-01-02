@@ -113,7 +113,6 @@ var boards = (function () {
      */
     function init() {
         var players = JSON.parse(sessionStorage.getItem("players"));
-        var tmpv;
         glob_board = {};
         players.forEach(addData);
         sessionStorage.setItem("boards", JSON.stringify(glob_board));
@@ -143,7 +142,7 @@ var boards = (function () {
     function use_plyr_bg_color() {
         ctx.strokeStyle = BLACK;
         ctx.fillStyle = BLACK;
-        if (sessionStorage.getItem('page') === BLACK) {
+        if (sessionStorage.getItem("page") === BLACK) {
             ctx.strokeStyle = WHITE;
             ctx.fillStyle = WHITE;
         }
