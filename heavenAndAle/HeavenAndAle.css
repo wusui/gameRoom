@@ -1,0 +1,25 @@
+body {
+    background: #ffffff;
+}
+
+canvas {
+    background: #f0f0ff;
+}
+
+td {
+    text-align: center;
+}
+
+.centerblk {
+    text-align: center;
+}
+
+.helpmsg {
+    font-size: 20px;
+}
+
+.centerdiv {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+}
