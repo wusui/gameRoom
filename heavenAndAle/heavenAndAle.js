@@ -193,16 +193,7 @@ var heavenAndAle = (function () {
         var p2bon = sessionStorage.getItem("add2rec2");
         var resLoc;
         var bdata;
-        if (yval < 70) {
-            return;
-        }
-        if (yval > 130) {
-            return;
-        }
-        if (xval < 530) {
-            return;
-        }
-        if (xval > 1010) {
+        if (yval < 70  || yval > 130 || xval < 530 || xval > 1010) {
             return;
         }
         if ((xval - 530) % 100 > 80) {
