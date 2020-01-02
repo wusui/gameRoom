@@ -1,6 +1,7 @@
 /* Copyright (c) 2020 Warren Usui, MIT License */
-/*global sessionStorage, RCOLOR, RNAME, NUM_OF_BARRELS, handlePage
-  BLACK, WHITE, PALE_Y, BROWN, heavenAndAle, canvasObjects, gameDialog */
+/*global sessionStorage, RCOLOR, RNAME, NUM_OF_BARRELS, handlePage,
+  BLACK, WHITE, PALE_Y, BROWN, LIGHT_GREEN, OLIVE_GREEN, BRIGHT_RED,
+  heavenAndAle, canvasObjects, gameDialog */
 /*jslint browser:true */
 
 /*****************************************************************************
@@ -54,6 +55,9 @@ var boards = (function () {
     const init_pos = [1, -2, -4, -6, -8];
     const L_PANEL_WIDTH = 500;
     const PANEL_HEIGHT = 100;
+    var pattern014 = [0, 1, 4];
+    var pattern0124 = [0, 1, 2, 4];
+    var pattern0134 = [0, 1, 3, 4];
     var glob_board;
     var newboard;
     var ctx;
@@ -149,13 +153,10 @@ var boards = (function () {
     }
 
     /**
-     * Draw shed info -- called from forEach staement
+     * Draw shed info -- called from forEach statement
      */
     function drawShedInfo(item, index) {
         var xoffset;
-        var pattern014 = [0, 1, 4];
-        var pattern0124 = [0, 1, 2, 4];
-        var pattern0134 = [0, 1, 3, 4];
         use_plyr_bg_color();
         xoffset = index * 100;
         ctx.moveTo(xoffset, 0);
@@ -167,8 +168,8 @@ var boards = (function () {
         ctx.font = "40px Arial";
         ctx.textAlign = "left";
         ctx.fillText(item[1], xoffset + 10, 90);
-        ctx.fillStyle = "#008000";
-        ctx.strokeStyle = "#008000";
+        ctx.fillStyle = OLIVE_GREEN;
+        ctx.strokeStyle = OLIVE_GREEN;
         ctx.beginPath();
         ctx.moveTo(xoffset + 48, 62);
         ctx.lineTo(xoffset + 72, 50);
@@ -264,7 +265,7 @@ var boards = (function () {
         ctx.textAlign = "center";
         ctx.fillStyle = BLACK;
         if (resource_info[item] < 0) {
-            ctx.fillStyle = "#ff0000";
+            ctx.fillStyle = BRIGHT_RED;
         }
         ctx.font = "40px Arial";
         ctx.fillText(resource_info[item], 560 + index * 100, 104);
@@ -341,7 +342,7 @@ var boards = (function () {
         ctx.fillText("BREWMASTER", 280, 140);
         ctx.fillText("BARRELS", 200, 360);
         ctx.fillText("RESOURCE TRACKER", 650, 40);
-        ctx.fillStyle = "#c0ffc0";
+        ctx.fillStyle = LIGHT_GREEN;
         ctx.strokeRect(100, 150, 100, 50);
         ctx.fillRect(100, 150, 100, 50);
         ctx.font = "30px Arial";
@@ -434,7 +435,9 @@ var boards = (function () {
         trtd = "<tr><td>";
         if (item.low <= bm_number) {
             if (item.high >= bm_number) {
-                trtd = "<tr style=\"background-color:#50ff50\"><td>";
+                trtd = "<tr style=\"background-color:";
+                trtd += LIGHT_GREEN;
+                trtd += "\"><td>";
             }
         }
         brewmaster_msg += trtd + field1 + "</td><td>" + field2 + "</td><td>";

@@ -494,10 +494,7 @@ var rondel = (function () {
         if (sessionStorage.getItem("event_type") === "Mouse") {
             xnum = sessionStorage.getItem("X_value");
             ynum = sessionStorage.getItem("Y_value");
-            if (xnum > 100) {
-                return;
-            }
-            if (ynum > 100) {
+            if (xnum > 100  || ynum >100) {
                 return;
             }
             digit1 = Math.floor(xnum / 50);

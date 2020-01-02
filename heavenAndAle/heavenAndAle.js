@@ -212,14 +212,6 @@ var heavenAndAle = (function () {
      * Handle user input on the canvas.
      */
     function handler() {
-        /*
-        if (sessionStorage.getItem("event_type") === "Mouse") {
-            xlert("pageX " + sessionStorage.getItem("X_value"));
-            xlert("pageY " + sessionStorage.getItem("Y_value"));
-        } else {
-            xlert("last key " + sessionStorage.getItem("Last_keypress"));
-        }
-        */
         var rec2plyr;
         if (sessionStorage.getItem("page") === "rondel") {
             common_button_hit(RONDEL_BUTTON_START);
