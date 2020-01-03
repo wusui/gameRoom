@@ -109,6 +109,26 @@ const MAP_SHED_TOUCHES = {
     5: [7, 8, 10, 11, 12, 13]
 };
 
+const MAP_HEX_LAYOUT = [
+    [730, 2],
+    [700, 3],
+    [610, 6],
+    [580, 7],
+    [610, 6],
+    [580, 7],
+    [610, 6]
+];
+
+const MAP_SHED_LABELS = [
+    [738, 252],
+    [738, 252 + 104],
+    [738, 252 + 208],
+    [738 + 120, 252 + 208],
+    [738 - 120, 252 + 208],
+    [738 + 120, 252 + 104],
+    [738 - 120, 252 + 104]
+];
+
 var boards = (function () {
     const START_MONEY = 25;
     const MAX_SCORING_DISKS = 10;
@@ -130,6 +150,7 @@ var boards = (function () {
     var priv_list;
     var resource_info;
     var score_dsks;
+    var map_hex_hgt;
 
     /**
      * ForEach called function to set initial resource track token
@@ -365,9 +386,10 @@ var boards = (function () {
         ctx.textAlign = "center";
         ctx.fillText(item[0], 1040, yloc + 7);
     }
-
-    function drawHexes(xpos, ypos, xnumber) {
-        var number = xnumber;
+    
+    function drawHexes(item) {
+        var xpos = item[0];
+        var number = item[1];
         var next;
         var lt_cnt = Math.floor(number / 2);
         var colorg;
@@ -378,16 +400,20 @@ var boards = (function () {
             } else {
                 colorg = OLIVE_GREEN;
             }
-            if (xnumber == 7 && cnt == 1) {
+            if (item[1] == 7 && cnt == 1) {
                 colorg = OLIVE_GREEN;
             }
-            next = shapeDrawer.drawHex(xpos, ypos, 60, colorg, "");
+            next = shapeDrawer.drawHex(xpos, map_hex_hgt, 60, colorg, "");
             xpos += 60;
             number -= 1;
             lt_cnt -= 1;
             cnt += 1;
         }
-        return next[1];
+        map_hex_hgt = next[1];
+    }
+
+    function add_shed_label(item) {
+        ctx.fillText("SHED", item[0], item [1]);
     }
     /**
      * Switch to a player board
@@ -406,7 +432,6 @@ var boards = (function () {
         var board_info;
         var money;
         var sess_page;
-        var ht;
         handlePage.clear();
         ctx = handlePage.getContext();
         ctx.beginPath();
@@ -475,23 +500,12 @@ var boards = (function () {
         RCOLOR.forEach(add_resource_score_dsk);
         ["A", "B", "C", "D"].forEach(add_monk_score_dsk);
         score_dsks.forEach(draw_score_disks);
-        ht = drawHexes(730, 160, 2);
-        ht = drawHexes(700, ht, 3);
-        ht = drawHexes(610, ht, 6);
-        ht = drawHexes(580, ht, 7);
-        ht = drawHexes(610, ht, 6);
-        ht = drawHexes(580, ht, 7);
-        drawHexes(610, ht, 6);
+        map_hex_hgt = 160;
+        MAP_HEX_LAYOUT.forEach(drawHexes);
         ctx.font = "16px Arial";
         ctx.fillStyle = WHITE;
         ctx.textAlign = "left";
-        ctx.fillText("SHED", 738, 252);
-        ctx.fillText("SHED", 738, 252 + 104);
-        ctx.fillText("SHED", 738, 252 + 208);
-        ctx.fillText("SHED", 738 + 120, 252 + 208);
-        ctx.fillText("SHED", 738 - 120, 252 + 208);
-        ctx.fillText("SHED", 738 + 120, 252 + 104);
-        ctx.fillText("SHED", 738 - 120, 252 + 104);
+        MAP_SHED_LABELS.forEach(add_shed_label);
     }
 
     /**
