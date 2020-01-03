@@ -46,6 +46,69 @@ const BM_CHART = [
 ];
 
 const PG_BUTTON_START = 450;
+
+const SUNNY_MAP_POINTS = [
+    [730, 195],
+    [700, 247],
+    [610, 299],
+    [670, 299],
+    [730, 299],
+    [580, 351],
+    [700, 351],
+    [610, 403],
+    [670, 403],
+    [730, 403],
+    [580, 455],
+    [700, 455],
+    [610, 507],
+    [670, 507],
+    [730, 507]
+];
+
+const SHADY_MAP_POINTS = [
+    [790, 195],
+    [820, 247],
+    [910, 299],
+    [850, 299],
+    [790, 299],
+    [940, 351],
+    [820, 351],
+    [910, 403],
+    [850, 403],
+    [790, 403],
+    [940, 455],
+    [820, 455],
+    [910, 507],
+    [850, 507],
+    [790, 507]
+];
+
+const MAP_HEX_TOUCHES = {
+    0: [0, 1, -1],
+    1: [0, 3, 4, -1],
+    2: [3, 5, -4],
+    3: [1, 4, 6, 3, -4],
+    4: [4, 1, 3, 6, -1, -2],
+    5: [2, 7, -4],
+    6: [3, 4, 8, 9, -2, -4],
+    7: [5, 8, 10, -4, -5],
+    8: [6, 9, 11, 7,  -4, -5],
+    9: [9, 6, 8, 11, -2, -3],
+    10: [8, 12, -5],
+    11: [8, 9, 13, 14, -3, -5],
+    12: [10, 13,-5],
+    13: [11, 12, 14, -5],
+    14: [14, 11, 13, -3]
+};
+
+const MAP_SHED_TOUCHES = {
+    1: [0, 1, 4],
+    2: [4, 6, 9],
+    3: [9, 11, 14],
+    4: [2, 3, 5, 6, 7, 8],
+    5: [7, 8, 10, 11, 12, 13]
+};
+
 var boards = (function () {
     const START_MONEY = 25;
     const MAX_SCORING_DISKS = 10;
@@ -303,6 +366,29 @@ var boards = (function () {
         ctx.fillText(item[0], 1040, yloc + 7);
     }
 
+    function drawHexes(xpos, ypos, xnumber) {
+        var number = xnumber;
+        var next;
+        var lt_cnt = Math.floor(number / 2);
+        var colorg;
+        var cnt = 0;
+        while (number > 0) {
+            if (lt_cnt > 0) {
+                colorg = LIGHT_GREEN;
+            } else {
+                colorg = OLIVE_GREEN;
+            }
+            if (xnumber == 7 && cnt == 1) {
+                colorg = OLIVE_GREEN;
+            }
+            next = shapeDrawer.drawHex(xpos, ypos, 60, colorg, "");
+            xpos += 60;
+            number -= 1;
+            lt_cnt -= 1;
+            cnt += 1;
+        }
+        return next[1];
+    }
     /**
      * Switch to a player board
      *
@@ -320,6 +406,7 @@ var boards = (function () {
         var board_info;
         var money;
         var sess_page;
+        var ht;
         handlePage.clear();
         ctx = handlePage.getContext();
         ctx.beginPath();
@@ -388,6 +475,23 @@ var boards = (function () {
         RCOLOR.forEach(add_resource_score_dsk);
         ["A", "B", "C", "D"].forEach(add_monk_score_dsk);
         score_dsks.forEach(draw_score_disks);
+        ht = drawHexes(730, 160, 2);
+        ht = drawHexes(700, ht, 3);
+        ht = drawHexes(610, ht, 6);
+        ht = drawHexes(580, ht, 7);
+        ht = drawHexes(610, ht, 6);
+        ht = drawHexes(580, ht, 7);
+        drawHexes(610, ht, 6);
+        ctx.font = "16px Arial";
+        ctx.fillStyle = WHITE;
+        ctx.textAlign = "left";
+        ctx.fillText("SHED", 738, 252);
+        ctx.fillText("SHED", 738, 252 + 104);
+        ctx.fillText("SHED", 738, 252 + 208);
+        ctx.fillText("SHED", 738 + 120, 252 + 208);
+        ctx.fillText("SHED", 738 - 120, 252 + 208);
+        ctx.fillText("SHED", 738 + 120, 252 + 104);
+        ctx.fillText("SHED", 738 - 120, 252 + 104);
     }
 
     /**
