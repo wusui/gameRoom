@@ -151,6 +151,8 @@ var boards = (function () {
     var resource_info;
     var score_dsks;
     var map_hex_hgt;
+    var hex_point;
+    var xpos;
 
     /**
      * ForEach called function to set initial resource track token
@@ -387,23 +389,57 @@ var boards = (function () {
         ctx.fillText(item[0], 1040, yloc + 7);
     }
     
-    function drawHexes(item) {
-        var xpos = item[0];
-        var number = item[1];
+    function find_pt(item, index) {
+        if (xpos == item[0]){
+            if (map_hex_hgt == item[1] - 35) {
+                hex_point = index;
+            }
+        }
+    }
+    function drawHexes(item, index) {
         var next;
-        var lt_cnt = Math.floor(number / 2);
+        var lt_cnt;
         var colorg;
         var cnt = 0;
+        var side_ptr;
+        var hcolor;
+        var nm;
+        var chk_side;
+        var number;
+        var aintshed;
+        var board_info = JSON.parse(sessionStorage.getItem("boards"));
+        var sess_page = sessionStorage.getItem("page");
+        xpos = item[0];
+        number = item[1];
+        lt_cnt = Math.floor(number / 2);
         while (number > 0) {
             if (lt_cnt > 0) {
                 colorg = LIGHT_GREEN;
+                side_ptr = board_info[sess_page].sunny;
+                chk_side = SUNNY_MAP_POINTS;
             } else {
                 colorg = OLIVE_GREEN;
+                side_ptr = board_info[sess_page].shady;
+                chk_side = SHADY_MAP_POINTS;
             }
-            if (item[1] == 7 && cnt == 1) {
+            aintshed = true;
+            if (item[1] % 2 == 1 && cnt % 2 == 1) {
                 colorg = OLIVE_GREEN;
+                aintshed = false;
             }
-            next = shapeDrawer.drawHex(xpos, map_hex_hgt, 60, colorg, "");
+            chk_side.forEach(find_pt);
+            if (aintshed && side_ptr[hex_point] != -1) {
+                if (side_ptr[hex_point] < 30) {
+                    hcolor = RCOLOR[Math.floor(side_ptr[hex_point] / 5)];
+                    nm = side_ptr[hex_point] % 5;
+                } else {
+                    hcolor = PALE_Y;
+                    nm = "ABCD"[side_ptr[hex_point] - 30];
+                }
+                next = shapeDrawer.drawHex(xpos, map_hex_hgt, 60, hcolor, nm);
+            } else {
+                next = shapeDrawer.drawHex(xpos, map_hex_hgt, 60, colorg, "");
+            }
             xpos += 60;
             number -= 1;
             lt_cnt -= 1;

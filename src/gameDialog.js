@@ -15,7 +15,7 @@ var gameDialog = (function () {
      * @param {string} message -- html input
      * @param {string} title -- text in header
      */
-    function message(in_text, header) {
+    function message(in_text, header, actions) {
         $("<div></div>").html(in_text).dialog({
             title: header,
             resizable: false,
@@ -24,6 +24,9 @@ var gameDialog = (function () {
                 "OK": function () {
                     $(this).dialog("close");
                 }
+            },
+            close: function() {
+                actions();
             }
         });
     }

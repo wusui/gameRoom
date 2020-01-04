@@ -59,10 +59,14 @@ var heavenAndAle = (function () {
     function regular_msg() {
         var sess_inf = sessionStorage.getItem("players");
         var fPlayers = JSON.parse(sess_inf);
-        helpText = "<p class=helpmsg>It is ";
+        helpText = "<p class=helpmsg>It is <b>";
         addPlyrColor(fPlayers[0]);
         helpText = helpText.trim();
-        helpText += "'s move</p>";
+        helpText += "'s</b> move.</p>";
+        helpText += "<p>Move <b>";
+        addPlyrColor(fPlayers[0]);
+        helpText = helpText.trim();
+        helpText += "'s</b> token ahead on the track.</p>";
         return helpText;
     }
     /**
@@ -213,6 +217,7 @@ var heavenAndAle = (function () {
      */
     function handler() {
         var rec2plyr;
+        var page_disp;
         if (sessionStorage.getItem("page") === "rondel") {
             common_button_hit(RONDEL_BUTTON_START);
         } else {
@@ -230,6 +235,12 @@ var heavenAndAle = (function () {
                 help_message();
             }
             chk_resource_hit();
+        }
+        if (sessionStorage.getItem("state") === REGULAR_TURN) {
+            page_disp = sessionStorage.getItem("page");
+            if (page_disp == "rondel") {
+                alert('rondel page is visible');
+            }
         }
     }
 
