@@ -2,7 +2,7 @@
 /*global handlePage, starter, rondel, universe, sessionStorage,  gameDialog,
   boards, barrel, BROWN, WHITE, GREEN, BLUE, YELLOW, PG_BUTTON_START,
   canvasObjects, PRIV_INFO, RONDELBUTTON, RONDEL_BUTTON_START,
-  BREWMASTER_INFO */
+  BREWMASTER_INFO, alert */
 /*jslint browser:true */
 
 /*****************************************************************************
@@ -56,6 +56,9 @@ var heavenAndAle = (function () {
         helpText += "</span> ";
     }
 
+    /**
+     * Return help message on a normal turn.
+     */
     function regular_msg() {
         var sess_inf = sessionStorage.getItem("players");
         var fPlayers = JSON.parse(sess_inf);
@@ -92,6 +95,11 @@ var heavenAndAle = (function () {
     function game_over_msg() {
         return "Game Over.  Scoring may not be done yet";
     }
+
+    /**
+     * Handle the increase in the resource tracker if that starting position
+     * is picked.
+     */
     function player_gets_2r_msg() {
         var plyr = sessionStorage.getItem("add2rec2");
         var tp;
@@ -190,6 +198,11 @@ var heavenAndAle = (function () {
         }
     }
 
+    /**
+     * Check if the resource square is clicked on.  If we are increasing
+     * resource (the player is chosing this option from the starting
+     * square) then increase that resource too.
+     */
     function chk_resource_hit() {
         var xval = sessionStorage.getItem("X_value");
         var yval = sessionStorage.getItem("Y_value");
@@ -197,7 +210,7 @@ var heavenAndAle = (function () {
         var p2bon = sessionStorage.getItem("add2rec2");
         var resLoc;
         var bdata;
-        if (yval < 70  || yval > 130 || xval < 530 || xval > 1010) {
+        if (yval < 70 || yval > 130 || xval < 530 || xval > 1010) {
             return;
         }
         if ((xval - 530) % 100 > 80) {
@@ -212,6 +225,7 @@ var heavenAndAle = (function () {
             sessionStorage.setItem("state", REGULAR_TURN);
         }
     }
+
     /**
      * Handle user input on the canvas.
      */
@@ -238,8 +252,8 @@ var heavenAndAle = (function () {
         }
         if (sessionStorage.getItem("state") === REGULAR_TURN) {
             page_disp = sessionStorage.getItem("page");
-            if (page_disp == "rondel") {
-                alert('rondel page is visible');
+            if (page_disp === "rondel") {
+                alert("rondel page is visible");
             }
         }
     }

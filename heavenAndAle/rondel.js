@@ -380,7 +380,6 @@ var rondel = (function () {
     function switchTo() {
         var rinfo;
         var llayout;
-        var playersInOrder;
         handlePage.clear();
         rinfo = JSON.parse(sessionStorage.getItem("rondel"));
         llayout = rinfo.layout;
@@ -470,6 +469,9 @@ var rondel = (function () {
         sessionStorage.setItem("rondel", JSON.stringify(drondel));
     }
 
+    /**
+     * From forEach.  Set resource to increment
+     */
     function find2Res(item) {
         var bdata = JSON.parse(sessionStorage.getItem("boards"));
         if (bdata[item].canIncRes) {
@@ -477,6 +479,10 @@ var rondel = (function () {
             found2Res = item;
         }
     }
+
+    /**
+     * Handle picking of starting positions.
+     */
     function pick_start_pos() {
         var xnum;
         var ynum;
@@ -494,7 +500,7 @@ var rondel = (function () {
         if (sessionStorage.getItem("event_type") === "Mouse") {
             xnum = sessionStorage.getItem("X_value");
             ynum = sessionStorage.getItem("Y_value");
-            if (xnum > 100  || ynum >100) {
+            if (xnum > 100 || ynum > 100) {
                 return;
             }
             digit1 = Math.floor(xnum / 50);
@@ -508,7 +514,7 @@ var rondel = (function () {
                 if (new_starter === "undefined") {
                     return;
                 }
-                sess_tmp =  JSON.stringify(nextQueue);
+                sess_tmp = JSON.stringify(nextQueue);
                 sessionStorage.setItem("start_queue", sess_tmp);
                 tempinfo.layout[0][ssqz[indx]] = new_starter;
                 sessionStorage.setItem("rondel", JSON.stringify(tempinfo));

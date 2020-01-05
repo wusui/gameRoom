@@ -1,7 +1,7 @@
 /* Copyright (c) 2020 Warren Usui, MIT License */
 /*global sessionStorage, RCOLOR, RNAME, NUM_OF_BARRELS, handlePage,
   BLACK, WHITE, PALE_Y, BROWN, LIGHT_GREEN, OLIVE_GREEN, BRIGHT_RED,
-  heavenAndAle, canvasObjects, gameDialog */
+  heavenAndAle, canvasObjects, gameDialog, shapeDrawer */
 /*jslint browser:true */
 
 /*****************************************************************************
@@ -84,29 +84,29 @@ const SHADY_MAP_POINTS = [
 ];
 
 const MAP_HEX_TOUCHES = {
-    0: [0, 1, -1],
-    1: [0, 3, 4, -1],
-    2: [3, 5, -4],
-    3: [1, 4, 6, 3, -4],
-    4: [4, 1, 3, 6, -1, -2],
-    5: [2, 7, -4],
-    6: [3, 4, 8, 9, -2, -4],
-    7: [5, 8, 10, -4, -5],
-    8: [6, 9, 11, 7,  -4, -5],
-    9: [9, 6, 8, 11, -2, -3],
-    10: [8, 12, -5],
-    11: [8, 9, 13, 14, -3, -5],
-    12: [10, 13,-5],
-    13: [11, 12, 14, -5],
-    14: [14, 11, 13, -3]
+    "0": [0, 1, -1],
+    "1": [0, 3, 4, -1],
+    "2": [3, 5, -4],
+    "3": [1, 4, 6, 3, -4],
+    "4": [4, 1, 3, 6, -1, -2],
+    "5": [2, 7, -4],
+    "6": [3, 4, 8, 9, -2, -4],
+    "7": [5, 8, 10, -4, -5],
+    "8": [6, 9, 11, 7, -4, -5],
+    "9": [9, 6, 8, 11, -2, -3],
+    "10": [8, 12, -5],
+    "11": [8, 9, 13, 14, -3, -5],
+    "12": [10, 13, -5],
+    "13": [11, 12, 14, -5],
+    "14": [14, 11, 13, -3]
 };
 
 const MAP_SHED_TOUCHES = {
-    1: [0, 1, 4],
-    2: [4, 6, 9],
-    3: [9, 11, 14],
-    4: [2, 3, 5, 6, 7, 8],
-    5: [7, 8, 10, 11, 12, 13]
+    "1": [0, 1, 4],
+    "2": [4, 6, 9],
+    "3": [9, 11, 14],
+    "4": [2, 3, 5, 6, 7, 8],
+    "5": [7, 8, 10, 11, 12, 13]
 };
 
 const MAP_HEX_LAYOUT = [
@@ -388,15 +388,23 @@ var boards = (function () {
         ctx.textAlign = "center";
         ctx.fillText(item[0], 1040, yloc + 7);
     }
-    
+
+    /**
+     * Called from forEach loop.  Given the midpoint of a hex, find
+     * the hexes top most point.  Set hex_point value.
+     */
     function find_pt(item, index) {
-        if (xpos == item[0]){
-            if (map_hex_hgt == item[1] - 35) {
+        if (xpos === item[0]) {
+            if (map_hex_hgt === item[1] - 35) {
                 hex_point = index;
             }
         }
     }
-    function drawHexes(item, index) {
+
+    /**
+     * Called from forEach loop.  Add hexes to the farm map.
+     */
+    function drawHexes(item) {
         var next;
         var lt_cnt;
         var colorg;
@@ -407,6 +415,7 @@ var boards = (function () {
         var chk_side;
         var number;
         var aintshed;
+        var monklabels = "ABCD";
         var board_info = JSON.parse(sessionStorage.getItem("boards"));
         var sess_page = sessionStorage.getItem("page");
         xpos = item[0];
@@ -423,18 +432,18 @@ var boards = (function () {
                 chk_side = SHADY_MAP_POINTS;
             }
             aintshed = true;
-            if (item[1] % 2 == 1 && cnt % 2 == 1) {
+            if (item[1] % 2 === 1 && cnt % 2 === 1) {
                 colorg = OLIVE_GREEN;
                 aintshed = false;
             }
             chk_side.forEach(find_pt);
-            if (aintshed && side_ptr[hex_point] != -1) {
+            if (aintshed && side_ptr[hex_point] !== -1) {
                 if (side_ptr[hex_point] < 30) {
                     hcolor = RCOLOR[Math.floor(side_ptr[hex_point] / 5)];
                     nm = side_ptr[hex_point] % 5;
                 } else {
                     hcolor = PALE_Y;
-                    nm = "ABCD"[side_ptr[hex_point] - 30];
+                    nm = monklabels[side_ptr[hex_point] - 30];
                 }
                 next = shapeDrawer.drawHex(xpos, map_hex_hgt, 60, hcolor, nm);
             } else {
@@ -448,9 +457,13 @@ var boards = (function () {
         map_hex_hgt = next[1];
     }
 
+    /**
+     * Mark sheds on the map.  Called from forEach.
+     */
     function add_shed_label(item) {
-        ctx.fillText("SHED", item[0], item [1]);
+        ctx.fillText("SHED", item[0], item[1]);
     }
+
     /**
      * Switch to a player board
      *
