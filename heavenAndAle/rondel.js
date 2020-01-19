@@ -12,6 +12,7 @@
  *****************************************************************************
  */
 const RONDEL_BUTTON_START = 130;
+var start_spots = ["first", "mvRes", "mvBrew", "xtraMny"];
 var rondel = (function () {
     const ALL_SQ_SZ = 100;
     const COM_SQ_SZ = 90;
@@ -51,35 +52,37 @@ var rondel = (function () {
     var xgval;
     var ygval;
     var found2Res;
+    var ns_xcoord;
+    var ns_ycoord;
     var layout = [
         {type: "Start", "first": "", "xtraMny": "", "mvBrew": "", "mvRes": ""},
-        {type: "Resource", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Monk", player: "", content: []},
-        {type: "Score A", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Score B", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Monk", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Score C", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Barrel", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Score ABC", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Monk", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Score ABC", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Resource", player: "", content: []},
-        {type: "Score ABC", player: "", content: []},
-        {type: "Monk", player: "", content: []},
-        {type: "Barrel", player: "", content: []},
-        {type: "Resource", player: "", content: []}
+        {type: "Resource", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Monk", player: [], content: []},
+        {type: "Score A", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Score B", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Monk", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Score C", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Barrel", player: [], content: ["b"]},
+        {type: "Resource", player: [], content: []},
+        {type: "Score ABC", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Monk", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Score ABC", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Resource", player: [], content: []},
+        {type: "Score ABC", player: [], content: []},
+        {type: "Monk", player: [], content: []},
+        {type: "Barrel", player: [], content: ["b"]},
+        {type: "Resource", player: [], content: []}
     ];
 
     /**
@@ -250,6 +253,20 @@ var rondel = (function () {
         }
     }
 
+    function show_token(item, index) {
+        var centers = [[23, 23], [67, 23], [23, 67], [67, 67]];
+        var locx = ns_xcoord + centers[index][0];
+        var locy = ns_ycoord + centers[index][1];
+        var ctx = handlePage.getContext();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = BLACK;
+        ctx.beginPath();
+        ctx.arc(locx, locy, 20, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+        ctx.fillStyle = item;
+        ctx.fill();
+    }
     /**
      * Add a square to the rondel
      *
@@ -257,23 +274,26 @@ var rondel = (function () {
      * @param {integer} index -- index into layout
      */
     function addRondelSq(item, index) {
-        var xcoord = index;
         var switcher;
-        var ycoord = 0;
-        if (xcoord > RONDEL_RIGHT_IND) {
-            xcoord = RONDEL_RIGHT_IND;
-            ycoord = index - RONDEL_RIGHT_IND;
-            if (ycoord > RONDEL_BOT_IND) {
-                ycoord = RONDEL_BOT_IND;
-                xcoord = 2 * RONDEL_RIGHT_IND + RONDEL_BOT_IND - index;
-                if (xcoord < 0) {
-                    xcoord = 0;
-                    ycoord = TOTAL_NUM_OF_SQUARES - index;
+        var xt;
+        var yt;
+        var ctx;
+        ns_xcoord = index;
+        ns_ycoord = 0;
+        if (ns_xcoord > RONDEL_RIGHT_IND) {
+            ns_xcoord = RONDEL_RIGHT_IND;
+            ns_ycoord = index - RONDEL_RIGHT_IND;
+            if (ns_ycoord > RONDEL_BOT_IND) {
+                ns_ycoord = RONDEL_BOT_IND;
+                ns_xcoord = 2 * RONDEL_RIGHT_IND + RONDEL_BOT_IND - index;
+                if (ns_xcoord < 0) {
+                    ns_xcoord = 0;
+                    ns_ycoord = TOTAL_NUM_OF_SQUARES - index;
                 }
             }
         }
-        xcoord = xcoord * ALL_SQ_SZ + EDGE_WIDTH;
-        ycoord = ycoord * ALL_SQ_SZ + EDGE_WIDTH;
+        ns_xcoord = ns_xcoord * ALL_SQ_SZ + EDGE_WIDTH;
+        ns_ycoord = ns_ycoord * ALL_SQ_SZ + EDGE_WIDTH;
         switcher = item.type;
         if (switcher.startsWith("Score")) {
             switcher = "Score";
@@ -281,21 +301,73 @@ var rondel = (function () {
         switch (switcher) {
         case "Start":
             draw_Start();
-            break;
+            return;
         case "Resource":
-            drawResrcSq(xcoord, ycoord, item.content);
+            drawResrcSq(ns_xcoord, ns_ycoord, item.content);
             break;
         case "Monk":
-            drawMonkSq(xcoord, ycoord, item.content);
+            drawMonkSq(ns_xcoord, ns_ycoord, item.content);
             break;
         case "Score":
-            scoring_disk_sq(xcoord, ycoord, item.content);
+            scoring_disk_sq(ns_xcoord, ns_ycoord, item.content);
             break;
         case "Barrel":
-            barrel_room(xcoord, ycoord);
+            barrel_room(ns_xcoord, ns_ycoord);
             break;
         }
-
+        xt = ns_xcoord + 30;
+        yt = ns_ycoord + 10;
+        if (item.content.length === 0) {
+            if (item.player.length === 1) {
+                canvasObjects.drawMeeple(xt, yt, 35, item.player[0]);
+            } else {
+                item.player.forEach(show_token);
+            }
+        } else {
+            ctx = handlePage.getContext();
+            xt = ns_xcoord - 5;
+            yt = ns_ycoord - 5;
+            if (item.player.length === 1) {
+                ctx.fillStyle = item.player[0];
+                ctx.fillRect(xt, yt, 5, 100);
+                ctx.fillRect(xt + 95, yt, 5, 100);
+                ctx.fillRect(xt, yt, 100, 5);
+                ctx.fillRect(xt, yt + 95, 100, 5);
+            }
+            if (item.player.length === 2) {
+                ctx.fillStyle = item.player[0];
+                ctx.fillRect(xt, yt, 5, 100);
+                ctx.fillRect(xt, yt, 50, 5);
+                ctx.fillRect(xt, yt + 95, 50, 5);
+                ctx.fillStyle = item.player[1];
+                ctx.fillRect(xt + 95, yt, 5, 100);
+                ctx.fillRect(xt + 50, yt, 50, 5);
+                ctx.fillRect(xt + 50, yt + 95, 50, 5);
+            }
+            if (item.player.length === 3) {
+                ctx.fillStyle = item.player[0];
+                ctx.fillRect(xt, yt, 5, 100);
+                ctx.fillRect(xt, yt, 20, 5);
+                ctx.fillRect(xt, yt + 95, 20, 5);
+                ctx.fillStyle = item.player[1];
+                ctx.fillRect(xt + 95, yt, 5, 100);
+                ctx.fillRect(xt + 80, yt, 20, 5);
+                ctx.fillRect(xt + 80, yt + 95, 20, 5);
+                ctx.fillStyle = item.player[2];
+                ctx.fillRect(xt + 20, yt, 60, 5);
+                ctx.fillRect(xt + 20, yt + 95, 60, 5);
+            }
+            if (item.player.length === 4) {
+                ctx.fillStyle = item.player[0];
+                ctx.fillRect(xt, yt, 5, 100);
+                ctx.fillStyle = item.player[1];
+                ctx.fillRect(xt + 95, yt, 5, 100);
+                ctx.fillStyle = item.player[2];
+                ctx.fillRect(xt, yt, 100, 5);
+                ctx.fillStyle = item.player[3];
+                ctx.fillRect(xt, yt + 95, 100, 5);
+            }
+        }
     }
 
     /**
@@ -438,6 +510,17 @@ var rondel = (function () {
             localVar = drondel.resources[thisRoundIndex][0] % UNIQ_RESC_NUMB;
             drondel.resources[thisRoundIndex].shift();
             square.content.push(localVar);
+            /* DEBUG (index is not needed when not debugging
+             * change setSquare to setSquare(square, index) */
+            /*
+            if (index === 1) {
+                square.content.push(1);
+                square.content.push(7);
+                square.content.push(13);
+                square.content.push(20);
+                square.content.push(21);
+            }
+            */
         }
         if (square.type === "Monk") {
             localVar = drondel.monks[thisRoundIndex][0] % NUM_MONK_TYPES;
@@ -496,7 +579,6 @@ var rondel = (function () {
         var sess_inf;
         var fPlayers;
         var bdata;
-        var ssqz = ["first", "mvRes", "mvBrew", "xtraMny"];
         if (sessionStorage.getItem("event_type") === "Mouse") {
             xnum = sessionStorage.getItem("X_value");
             ynum = sessionStorage.getItem("Y_value");
@@ -507,7 +589,7 @@ var rondel = (function () {
             digit2 = Math.floor(ynum / 50);
             indx = digit2 * 2 + digit1;
             tempinfo = JSON.parse(sessionStorage.getItem("rondel"));
-            if (tempinfo.layout[0][ssqz[indx]] === "") {
+            if (tempinfo.layout[0][start_spots[indx]] === "") {
                 sess_tmp = sessionStorage.getItem("start_queue");
                 nextQueue = JSON.parse(sess_tmp);
                 new_starter = nextQueue.shift();
@@ -516,7 +598,7 @@ var rondel = (function () {
                 }
                 sess_tmp = JSON.stringify(nextQueue);
                 sessionStorage.setItem("start_queue", sess_tmp);
-                tempinfo.layout[0][ssqz[indx]] = new_starter;
+                tempinfo.layout[0][start_spots[indx]] = new_starter;
                 sessionStorage.setItem("rondel", JSON.stringify(tempinfo));
                 bdata = JSON.parse(sessionStorage.getItem("boards"));
                 if (indx === 3) {

@@ -2,7 +2,7 @@
 /*global handlePage, starter, rondel, universe, sessionStorage,  gameDialog,
   boards, barrel, BROWN, WHITE, GREEN, BLUE, YELLOW, PG_BUTTON_START,
   canvasObjects, PRIV_INFO, RONDELBUTTON, RONDEL_BUTTON_START,
-  BREWMASTER_INFO, alert */
+  BREWMASTER_INFO, move, player_actions */
 /*jslint browser:true */
 
 /*****************************************************************************
@@ -15,6 +15,7 @@ const PLACE_STARTING_POS = "place_starting_pos";
 const GAME_OVER_STATE = "game_over";
 const PLAYER_GETS_2RES = "player_gets_2_resources";
 const REGULAR_TURN = "regular_turn";
+const PURCHASE_PLOT = "purchasing_land";
 const BARREL_RATIO = 1.25;
 const BARREL_ADJ = 10;
 const NUM_OF_BARRELS = 12;
@@ -122,6 +123,23 @@ var heavenAndAle = (function () {
     }
 
     /**
+     * After landing on a resource or monk, purchase something.
+     */
+    function purchase_msg() {
+        var sess_inf = sessionStorage.getItem("players");
+        var players = JSON.parse(sess_inf);
+        helpText = "<p class=helpmsg><b>";
+        addPlyrColor(players[0]);
+        helpText += "</b> is currently deciding ";
+        if (sessionStorage.getItem("placing_item_now") !== "NO") {
+            helpText += "where to place a tile.</p>";
+        } else {
+            helpText += "whether or not to purchase a tile.</p>";
+        }
+        return helpText;
+    }
+
+    /**
      * Given state, display appropriate help message.
      */
     function help_message() {
@@ -129,7 +147,8 @@ var heavenAndAle = (function () {
             "place_starting_pos": placementHelpMsg,
             "game_over": game_over_msg,
             "player_gets_2_resources": player_gets_2r_msg,
-            "regular_turn": regular_msg
+            "regular_turn": regular_msg,
+            "purchasing_land": purchase_msg
         };
         var state = sessionStorage.getItem("state");
         gameDialog.message(help_table[state](), "Help");
@@ -184,10 +203,14 @@ var heavenAndAle = (function () {
         if (canvasObjects.buttonHit(barrel.barrelButton)) {
             gameDialog.message(barrel.barrelInfoMsg(), "Barrel Information");
         }
-        players.forEach(hit_player_buttons);
+        if (sessionStorage.getItem("state") !== PURCHASE_PLOT) {
+            players.forEach(hit_player_buttons);
+        }
         if (x_offset === PG_BUTTON_START) {
-            if (canvasObjects.buttonHit(RONDELBUTTON)) {
-                rondel.switchTo();
+            if (sessionStorage.getItem("state") !== PURCHASE_PLOT) {
+                if (canvasObjects.buttonHit(RONDELBUTTON)) {
+                    rondel.switchTo();
+                }
             }
             if (canvasObjects.buttonHit(PRIV_INFO)) {
                 boards.priv_info();
@@ -200,7 +223,7 @@ var heavenAndAle = (function () {
 
     /**
      * Check if the resource square is clicked on.  If we are increasing
-     * resource (the player is chosing this option from the starting
+     * resource (the player is choosing this option from the starting
      * square) then increase that resource too.
      */
     function chk_resource_hit() {
@@ -248,12 +271,18 @@ var heavenAndAle = (function () {
                 boards.switchTo(rec2plyr);
                 help_message();
             }
+            alert('way down here');
             chk_resource_hit();
         }
         if (sessionStorage.getItem("state") === REGULAR_TURN) {
             page_disp = sessionStorage.getItem("page");
             if (page_disp === "rondel") {
-                alert("rondel page is visible");
+                move.action();
+            }
+        }
+        if (sessionStorage.getItem("state") === PURCHASE_PLOT) {
+            if (sessionStorage.getItem("placing_item_now") !== "NO") {
+                player_actions.add_tile_to_map();
             }
         }
     }

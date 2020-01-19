@@ -129,22 +129,20 @@ const MAP_SHED_LABELS = [
     [738 - 120, 252 + 104]
 ];
 
+const monklabels = "ABCD";
+
 var boards = (function () {
     const START_MONEY = 25;
     const MAX_SCORING_DISKS = 10;
     const HALF_MAP_SIZE = 15;
     const NUM_OF_SHEDS = 7;
     const BMASTER_START = -9;
-    const init_pos = [1, -2, -4, -6, -8];
     const L_PANEL_WIDTH = 500;
     const PANEL_HEIGHT = 100;
-    var pattern014 = [0, 1, 4];
-    var pattern0124 = [0, 1, 2, 4];
-    var pattern0134 = [0, 1, 3, 4];
-    var glob_board;
-    var newboard;
+    var ns_glob_board;
+    var ns_newboard;
     var ctx;
-    var bm_number;
+    var ns_bm_number;
     var brewmaster_msg;
     var bm_data;
     var priv_list;
@@ -159,7 +157,8 @@ var boards = (function () {
      * positions
      */
     function set_resources(item, index) {
-        newboard.resources[item] = init_pos[index];
+        const init_pos = [1, -2, -4, -6, -8];
+        ns_newboard.resources[item] = init_pos[index];
     }
 
     /**
@@ -182,20 +181,22 @@ var boards = (function () {
      * ForEach function that adds a new player board
      */
     function addData(item) {
-        newboard = {};
-        newboard.money = START_MONEY;
-        newboard.privileges = [1, 2, 3, 4, 5];
-        newboard.barrels = set_vector(0, NUM_OF_BARRELS);
-        newboard.brewmaster = BMASTER_START;
-        newboard.scoring_disks = set_vector(0, MAX_SCORING_DISKS);
-        newboard.scored_privs = set_vector(0, newboard.privileges.length);
-        newboard.sunny = set_vector(-1, HALF_MAP_SIZE);
-        newboard.shady = set_vector(-1, HALF_MAP_SIZE);
-        newboard.sheds = set_vector(-1, NUM_OF_SHEDS);
-        newboard.resources = {};
+        ns_newboard = {};
+        ns_newboard.money = START_MONEY;
+        ns_newboard.privileges = [1, 2, 3, 4, 5];
+        ns_newboard.barrels = set_vector(0, NUM_OF_BARRELS);
+        ns_newboard.brewmaster = BMASTER_START;
+        ns_newboard.scoring_disks = set_vector(0, MAX_SCORING_DISKS);
+        ns_newboard.scored_privs = set_vector(0, ns_newboard.privileges.length);
+        ns_newboard.sunny = set_vector(-1, HALF_MAP_SIZE);
+        ns_newboard.shady = set_vector(-1, HALF_MAP_SIZE);
+        ns_newboard.sheds = set_vector(-1, NUM_OF_SHEDS);
+        ns_newboard.prev_sq = -1;
+        ns_newboard.cur_sq = 0;
+        ns_newboard.resources = {};
         RCOLOR.forEach(set_resources);
-        newboard.canIncRes = false;
-        glob_board[item] = newboard;
+        ns_newboard.canIncRes = false;
+        ns_glob_board[item] = ns_newboard;
     }
 
     /**
@@ -203,9 +204,9 @@ var boards = (function () {
      */
     function init() {
         var players = JSON.parse(sessionStorage.getItem("players"));
-        glob_board = {};
+        ns_glob_board = {};
         players.forEach(addData);
-        sessionStorage.setItem("boards", JSON.stringify(glob_board));
+        sessionStorage.setItem("boards", JSON.stringify(ns_glob_board));
     }
 
     /**
@@ -243,6 +244,9 @@ var boards = (function () {
      */
     function drawShedInfo(item, index) {
         var xoffset;
+        var pattern014 = [0, 1, 4];
+        var pattern0124 = [0, 1, 2, 4];
+        var pattern0134 = [0, 1, 3, 4];
         use_plyr_bg_color();
         xoffset = index * 100;
         ctx.moveTo(xoffset, 0);
@@ -295,8 +299,8 @@ var boards = (function () {
      * ratio and brewmaster factor on player page.
      */
     function get_bm(item) {
-        if (item.low <= bm_number) {
-            if (item.high >= bm_number) {
+        if (item.low <= ns_bm_number) {
+            if (item.high >= ns_bm_number) {
                 bm_data = item.ratio + "  " + item.bval;
             }
         }
@@ -415,7 +419,6 @@ var boards = (function () {
         var chk_side;
         var number;
         var aintshed;
-        var monklabels = "ABCD";
         var board_info = JSON.parse(sessionStorage.getItem("boards"));
         var sess_page = sessionStorage.getItem("page");
         xpos = item[0];
@@ -440,7 +443,7 @@ var boards = (function () {
             if (aintshed && side_ptr[hex_point] !== -1) {
                 if (side_ptr[hex_point] < 30) {
                     hcolor = RCOLOR[Math.floor(side_ptr[hex_point] / 5)];
-                    nm = side_ptr[hex_point] % 5;
+                    nm = side_ptr[hex_point] % 5 + 1;
                 } else {
                     hcolor = PALE_Y;
                     nm = monklabels[side_ptr[hex_point] - 30];
@@ -486,7 +489,7 @@ var boards = (function () {
         ctx.beginPath();
         sessionStorage.setItem("page", player);
         bdata = JSON.parse(sessionStorage.getItem("boards"));
-        bm_number = bdata[sessionStorage.getItem("page")].brewmaster;
+        ns_bm_number = bdata[sessionStorage.getItem("page")].brewmaster;
         heavenAndAle.common_button_add(PG_BUTTON_START);
         canvasObjects.addButton(PRIV_INFO, true);
         canvasObjects.addButton(BREWMASTER_INFO, true);
@@ -518,7 +521,7 @@ var boards = (function () {
         ctx.fillRect(300, 150, 100, 90);
         use_plyr_bg_color();
         ctx.font = "30px Arial";
-        ctx.fillText(bm_number, 350, 180);
+        ctx.fillText(ns_bm_number, 350, 180);
         BM_CHART.forEach(get_bm);
         ctx.fillText(bm_data, 350, 230);
         ctx.strokeStyle = BLACK;
@@ -600,8 +603,8 @@ var boards = (function () {
             field1 = item.high;
         }
         trtd = "<tr><td>";
-        if (item.low <= bm_number) {
-            if (item.high >= bm_number) {
+        if (item.low <= ns_bm_number) {
+            if (item.high >= ns_bm_number) {
                 trtd = "<tr style=\"background-color:";
                 trtd += LIGHT_GREEN;
                 trtd += "\"><td>";

@@ -25,8 +25,10 @@ var gameDialog = (function () {
                     $(this).dialog("close");
                 }
             },
-            close: function() {
-                actions();
+            close: function () {
+                if (actions) {
+                    actions();
+                }
             }
         });
     }
@@ -55,7 +57,9 @@ var gameDialog = (function () {
                 }
             },
             close: function () {
-                actions(choice);
+                if (actions) {
+                    actions(choice);
+                }
             }
         });
     }

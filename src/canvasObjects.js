@@ -94,6 +94,7 @@ var canvasObjects = (function () {
         var headradius = MEEPLE_HEAD_ADJ * sizefactor;
         var maxy = ytoloc + size / 2;
         var armadjust = Math.floor(size / MEEPLE_ARM_ADJ);
+        ctx = handlePage.getContext();
         ctx.lineWidth = 5;
         ctx.strokeStyle = color;
         ctx.beginPath();
